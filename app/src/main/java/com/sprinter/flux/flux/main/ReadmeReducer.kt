@@ -3,6 +3,7 @@ package com.sprinter.flux.flux.main
 import android.annotation.SuppressLint
 import com.sprinter.flux.interactor.ReadmeInteractor
 import com.sprinter.flux.interactor.ReadmeParams
+import com.sprinter.flux.mvp.model.Readme
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.MutableStore
 import com.sprinter.fluxlib.Reducer
@@ -45,6 +46,12 @@ class ReadmeReducer(
                 )
                 store.updateState(updatedState)
                 store.dispatch(mainActionsCreator.receiveReadme())
-            }, { error -> store.dispatch(mainActionsCreator.fetchReadmeError(error)) })
+            }, { error ->
+                val updatedState = state.copy(
+                    readme = Readme.brokenReadme
+                )
+                store.updateState(updatedState)
+                store.dispatch(mainActionsCreator.fetchReadmeError(error))
+            })
     }
 }

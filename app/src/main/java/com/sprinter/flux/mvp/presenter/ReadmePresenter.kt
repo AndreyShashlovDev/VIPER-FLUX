@@ -38,7 +38,9 @@ class ReadmePresenter @Inject constructor(
     }
 
     override fun setupReadmeData(userName: String, repoName: String) {
-        store.dispatch(mainActionsCreator.fetchReadme(userName, repoName))
+        if (store.getState().readme.isEmpty()) {
+            store.dispatch(mainActionsCreator.fetchReadme(userName, repoName))
+        }
     }
 
     private fun onReceiveAction(
