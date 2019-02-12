@@ -26,7 +26,7 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
     private val flowableProcessor = PublishProcessor.create<Action<BaseData>>()
     private val storeAction = LinkedBlockingQueue<Action<BaseData>>()
     private val subject = BehaviorSubject.create<S>()
-    private val subjectAction = BehaviorSubject.create<ReceiveAction<Action<BaseData>, S>>()
+    private val subjectAction = PublishProcessor.create<ReceiveAction<Action<BaseData>, S>>()
 
     init {
         subject.onNext(state)
@@ -56,6 +56,7 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
     override fun subscribeToAction(): Observable<ReceiveAction<Action<BaseData>, S>> =
         subjectAction
             .observeOn(AndroidSchedulers.mainThread())
+            .toObservable()
 
     override fun updateState(updatedState: S) {
         subject.onNext(updatedState)
