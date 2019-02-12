@@ -23,11 +23,11 @@ allprojects {
     }
 
     subprojects { project ->
-//        apply from: "$rootDir/ktlint.gradle"
+        apply from: "$rootDir/ktlint.gradle"
 
         afterEvaluate {
             if (project.tasks.findByName('preBuild')) {
-//                preBuild.dependsOn(ktlint)
+                preBuild.dependsOn(ktlint)
             }
         }
     }
