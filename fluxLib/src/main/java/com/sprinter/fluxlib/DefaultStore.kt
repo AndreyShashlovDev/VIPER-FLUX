@@ -66,11 +66,16 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
         val filteredReducer = reducers
             .filter { reducer -> reducer.isServiceAction(action) }
 
+        var start: Observable<*> = Observable.fromCallable { }
+
         filteredReducer.forEach { filtered ->
-            filtered.execute(this, subject.value!!, action)
+            start = start.flatMap {
+                filtered.execute(this, subject.value!!, action)
+            }
         }
 
-        middlewares.forEach { middleware -> middleware.interceptor(action, state) }
+        middlewares.forEach { middleware -> start = middleware.interceptor(action, state, start) }
+        start.subscribe({ })
 
         subjectAction.onNext(
             ReceiveAction(

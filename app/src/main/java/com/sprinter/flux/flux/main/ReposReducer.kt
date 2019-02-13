@@ -5,6 +5,7 @@ import com.sprinter.flux.interactor.ReposInteractor
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.MutableStore
 import com.sprinter.fluxlib.Reducer
+import io.reactivex.Observable
 
 class ReposReducer(
     private val reposInteractor: ReposInteractor,
@@ -15,12 +16,13 @@ class ReposReducer(
         store: MutableStore<GlobalState>,
         state: GlobalState,
         action: Action<MainActionData>
-    ) {
-        when (action.data) {
+    ): Observable<*> {
+        return when (action.data) {
             is MainActionData.FetchReposAction -> fetchRepos(
                 store, state,
                 action.data as MainActionData.FetchReposAction
             )
+            else -> Observable.empty<Void>()
         }
     }
 
@@ -33,11 +35,11 @@ class ReposReducer(
         store: MutableStore<GlobalState>,
         state: GlobalState,
         data: MainActionData.FetchReposAction
-    ) {
+    ): Observable<*> {
         store.dispatch(mainActionsCreator.fetchingRepos())
 
-        reposInteractor.buildObservable(data.name)
-            .subscribe({ result ->
+        return reposInteractor.buildObservable(data.name)
+            .doOnNext { result ->
                 val updatedState = state.copy(
                     reposState = state.reposState.copy(
                         items = result
@@ -45,6 +47,7 @@ class ReposReducer(
                 )
                 store.updateState(updatedState)
                 store.dispatch(mainActionsCreator.receiveRepos())
-            }, { error -> store.dispatch(mainActionsCreator.fetchReposError(error)) })
+            }
+            .doOnError { error -> store.dispatch(mainActionsCreator.fetchReposError(error)) }
     }
 }

@@ -7,6 +7,7 @@ import com.sprinter.flux.mvp.model.Readme
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.MutableStore
 import com.sprinter.fluxlib.Reducer
+import io.reactivex.Observable
 
 class ReadmeReducer(
     private val readmeInteractor: ReadmeInteractor,
@@ -17,13 +18,14 @@ class ReadmeReducer(
         store: MutableStore<GlobalState>,
         state: GlobalState,
         action: Action<MainActionData>
-    ) {
-        when (action.data) {
+    ): Observable<*> {
+        return when (action.data) {
             is MainActionData.FetchReadmeAction ->
                 fetchReadme(
                     store, state,
                     action.data as MainActionData.FetchReadmeAction
                 )
+            else -> Observable.empty<Void>()
         }
     }
 
@@ -36,22 +38,25 @@ class ReadmeReducer(
         store: MutableStore<GlobalState>,
         state: GlobalState,
         data: MainActionData.FetchReadmeAction
-    ) {
+    ): Observable<*> {
         store.dispatch(mainActionsCreator.fetchingReadme())
-        readmeInteractor
+        val observable = readmeInteractor
             .buildObservable(ReadmeParams(data.owner, data.repoName))
-            .subscribe({ result ->
-                val updatedState = state.copy(
-                    readme = result
-                )
-                store.updateState(updatedState)
-                store.dispatch(mainActionsCreator.receiveReadme())
-            }, { error ->
-                val updatedState = state.copy(
-                    readme = Readme.brokenReadme
-                )
-                store.updateState(updatedState)
-                store.dispatch(mainActionsCreator.fetchReadmeError(error))
-            })
+
+        observable.subscribe({ result ->
+            val updatedState = state.copy(
+                readme = result
+            )
+            store.updateState(updatedState)
+            store.dispatch(mainActionsCreator.receiveReadme())
+        }, { error ->
+            val updatedState = state.copy(
+                readme = Readme.brokenReadme
+            )
+            store.updateState(updatedState)
+            store.dispatch(mainActionsCreator.fetchReadmeError(error))
+        })
+
+        return observable
     }
 }
