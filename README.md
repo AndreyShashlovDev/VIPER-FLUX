@@ -1,2 +1,2 @@
-Unidirectional data flow pattern FLUX
-Kotlin RxJava Retrofit Moxy Dagger2 OkHttp
+# Unidirectional data flow pattern FLUX
+## Kotlin RxJava Retrofit OkHttp Dagger2 Moxy MVP
