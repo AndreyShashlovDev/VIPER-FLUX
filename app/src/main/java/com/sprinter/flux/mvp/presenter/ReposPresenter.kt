@@ -4,23 +4,23 @@ import android.annotation.SuppressLint
 import com.arellomobile.mvp.InjectViewState
 import com.sprinter.flux.R
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.MainActionData.FetchReposErrorAction
-import com.sprinter.flux.flux.main.MainActionData.FetchingReposAction
-import com.sprinter.flux.flux.main.MainActionData.ReceiveReposAction
+import com.sprinter.flux.flux.main.ReposActionData.FetchReposErrorAction
+import com.sprinter.flux.flux.main.ReposActionData.FetchingReposAction
+import com.sprinter.flux.flux.main.ReposActionData.ReceiveReposAction
 import com.sprinter.flux.flux.main.MainActionsCreator
 import com.sprinter.flux.mvp.contract.ReposContract
 import com.sprinter.flux.mvp.model.Repo
 import com.sprinter.flux.router.Router
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.BaseData
-import com.sprinter.fluxlib.DefaultStore
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.ConfigurableStore
+import com.sprinter.fluxlib.ReceiveAction
 import javax.inject.Inject
 
 @InjectViewState
 class ReposPresenter @Inject constructor(
     private val router: Router,
-    private val store: MutableStore<GlobalState>,
+    private val store: ConfigurableStore<GlobalState>,
     private val mainActionsCreator: MainActionsCreator
 ) : AbstractPresenter<ReposContract.ReposView>(), ReposContract.ReposPresenter {
 
@@ -42,7 +42,7 @@ class ReposPresenter @Inject constructor(
     }
 
     private fun onReceiveAction(
-        receivedAction: DefaultStore.ReceiveAction<Action<BaseData>, GlobalState>
+        receivedAction: ReceiveAction<Action<BaseData>, GlobalState>
     ) {
         val action = receivedAction.action
         val items = receivedAction.state.reposState.items

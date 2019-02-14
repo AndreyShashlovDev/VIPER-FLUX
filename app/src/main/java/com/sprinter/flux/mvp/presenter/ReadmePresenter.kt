@@ -5,24 +5,24 @@ import android.util.Base64
 import com.arellomobile.mvp.InjectViewState
 import com.sprinter.flux.R
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.MainActionData.FetchReadmeErrorAction
-import com.sprinter.flux.flux.main.MainActionData.FetchingReadmeAction
-import com.sprinter.flux.flux.main.MainActionData.ReceiveReadmeAction
 import com.sprinter.flux.flux.main.MainActionsCreator
+import com.sprinter.flux.flux.main.ReadmeActionData.FetchReadmeErrorAction
+import com.sprinter.flux.flux.main.ReadmeActionData.FetchingReadmeAction
+import com.sprinter.flux.flux.main.ReadmeActionData.ReceiveReadmeAction
 import com.sprinter.flux.mvp.contract.ReadmeContract
 import com.sprinter.flux.mvp.model.Readme
 import com.sprinter.flux.router.Router
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.BaseData
-import com.sprinter.fluxlib.DefaultStore
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.ConfigurableStore
+import com.sprinter.fluxlib.ReceiveAction
 import java.nio.charset.Charset
 import javax.inject.Inject
 
 @InjectViewState
 class ReadmePresenter @Inject constructor(
     private val router: Router,
-    private val store: MutableStore<GlobalState>,
+    private val store: ConfigurableStore<GlobalState>,
     private val mainActionsCreator: MainActionsCreator
 ) : AbstractPresenter<ReadmeContract.ReadmeView>(), ReadmeContract.ReadmePresenter {
 
@@ -34,7 +34,7 @@ class ReadmePresenter @Inject constructor(
             .compose(bindUntilDetach())
             .subscribe(this::onReceiveAction)
 
-        view.visibilityLoading(true)
+        updateFetchingState(true, false, store.getState().readme)
     }
 
     override fun setupReadmeData(userName: String, repoName: String) {
@@ -44,7 +44,7 @@ class ReadmePresenter @Inject constructor(
     }
 
     private fun onReceiveAction(
-        receivedAction: DefaultStore.ReceiveAction<Action<BaseData>, GlobalState>
+        receivedAction: ReceiveAction<Action<BaseData>, GlobalState>
     ) {
         val action = receivedAction.action
         val readme = receivedAction.state.readme

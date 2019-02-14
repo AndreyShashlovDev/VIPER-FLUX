@@ -5,26 +5,26 @@ import com.sprinter.fluxlib.Action
 class MainActionsCreator {
 
     fun fetchRepos(userName: String) =
-        Action<MainActionData>(MainActionData.FetchReposAction(userName))
+        Action<ReposActionData>(ReposActionData.FetchReposAction(userName))
 
     fun fetchingRepos() =
-        Action<MainActionData>(MainActionData.FetchingReposAction)
+        Action<ReposActionData>(ReposActionData.FetchingReposAction)
 
     fun receiveRepos() =
-        Action<MainActionData>(MainActionData.ReceiveReposAction)
+        Action<ReposActionData>(ReposActionData.ReceiveReposAction)
 
     fun fetchReposError(e: Throwable) =
-        Action<MainActionData>(MainActionData.FetchReposErrorAction(e))
+        Action<ReposActionData>(ReposActionData.FetchReposErrorAction(e))
 
     fun receiveReadme() =
-        Action<MainActionData>(MainActionData.ReceiveReadmeAction)
+        Action<ReadmeActionData>(ReadmeActionData.ReceiveReadmeAction)
 
     fun fetchReadme(userName: String, repoName: String) =
-        Action<MainActionData>(MainActionData.FetchReadmeAction(userName, repoName))
+        Action<ReadmeActionData>(ReadmeActionData.FetchReadmeAction(userName, repoName))
 
     fun fetchingReadme() =
-        Action<MainActionData>(MainActionData.FetchingReadmeAction)
+        Action<ReadmeActionData>(ReadmeActionData.FetchingReadmeAction)
 
     fun fetchReadmeError(e: Throwable) =
-        Action<MainActionData>(MainActionData.FetchReadmeErrorAction(e))
+        Action<ReadmeActionData>(ReadmeActionData.FetchReadmeErrorAction(e))
 }

@@ -1,6 +1,6 @@
 package com.sprinter.flux.di.repos
 
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.ConfigurableStore
 import com.sprinter.flux.flux.main.GlobalState
 import com.sprinter.flux.flux.main.MainActionsCreator
 import com.sprinter.flux.interactor.ReposInteractor
@@ -17,7 +17,7 @@ class ReposFragmentModule {
     @Provides
     fun provideReposPresenter(
         router: Router,
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         mainActionsCreator: MainActionsCreator
     ): ReposContract.ReposPresenter =
         ReposPresenter(router, store, mainActionsCreator)

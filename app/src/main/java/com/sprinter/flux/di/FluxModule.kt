@@ -9,7 +9,7 @@ import com.sprinter.flux.flux.main.ReposReducer
 import com.sprinter.flux.interactor.ReadmeInteractor
 import com.sprinter.flux.interactor.ReposInteractor
 import com.sprinter.fluxlib.DefaultStore
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.ConfigurableStore
 import dagger.Module
 import dagger.Provides
 
@@ -21,7 +21,7 @@ class FluxModule {
         reposInteractor: ReposInteractor,
         readmeInteractor: ReadmeInteractor,
         mainActionsCreator: MainActionsCreator
-    ): MutableStore<GlobalState> =
+    ): ConfigurableStore<GlobalState> =
         DefaultStore(GlobalState())
             .registerReducer(ReadmeReducer(readmeInteractor, mainActionsCreator))
             .registerReducer(ReposReducer(reposInteractor, mainActionsCreator))

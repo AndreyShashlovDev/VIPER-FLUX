@@ -8,5 +8,5 @@ interface Store<S : State> {
 
     fun getState(): S
 
-    fun subscribeToAction(): Observable<DefaultStore.ReceiveAction<Action<BaseData>, S>>
+    fun subscribeToAction(): Observable<ReceiveAction<Action<BaseData>, S>>
 }

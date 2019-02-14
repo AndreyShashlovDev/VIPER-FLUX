@@ -1,62 +1,58 @@
 package com.sprinter.flux.flux.main
 
-import android.annotation.SuppressLint
 import com.sprinter.flux.interactor.ReadmeInteractor
 import com.sprinter.flux.interactor.ReadmeParams
-import com.sprinter.flux.mvp.model.Readme
 import com.sprinter.fluxlib.Action
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.BaseData
+import com.sprinter.fluxlib.ConfigurableStore
+import com.sprinter.fluxlib.ReceiveAction
 import com.sprinter.fluxlib.Reducer
 import io.reactivex.Observable
 
 class ReadmeReducer(
     private val readmeInteractor: ReadmeInteractor,
     private val mainActionsCreator: MainActionsCreator
-) : Reducer<GlobalState, MainActionData>() {
+) : Reducer<GlobalState, ReadmeActionData>() {
 
     override fun execute(
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         state: GlobalState,
-        action: Action<MainActionData>
-    ): Observable<*> {
+        action: Action<ReadmeActionData>
+    ): Observable<ReceiveAction<Action<BaseData>, GlobalState>> {
         return when (action.data) {
-            is MainActionData.FetchReadmeAction ->
+            is ReadmeActionData.FetchReadmeAction ->
                 fetchReadme(
                     store, state,
-                    action.data as MainActionData.FetchReadmeAction
+                    action.data as ReadmeActionData.FetchReadmeAction
                 )
-            else -> Observable.empty<Void>()
+            else -> ReceiveAction.createEmpty(state)
         }
     }
 
-    override fun isServiceAction(action: Action<MainActionData>): Boolean {
-        return action.data is MainActionData.FetchReadmeAction
+    override fun isServiceAction(action: Action<ReadmeActionData>): Boolean {
+        return action.data is ReadmeActionData.FetchReadmeAction
     }
 
-    @SuppressLint("CheckResult")
     private fun fetchReadme(
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         state: GlobalState,
-        data: MainActionData.FetchReadmeAction
-    ): Observable<*> {
+        data: ReadmeActionData.FetchReadmeAction
+    ): Observable<ReceiveAction<Action<BaseData>, GlobalState>> {
         store.dispatch(mainActionsCreator.fetchingReadme())
-        val observable = readmeInteractor
+
+        return readmeInteractor
             .buildObservable(ReadmeParams(data.owner, data.repoName))
-
-        observable.subscribe({ result ->
-            val updatedState = state.copy(
-                readme = result
-            )
-            store.updateState(updatedState)
-            store.dispatch(mainActionsCreator.receiveReadme())
-        }, { error ->
-            val updatedState = state.copy(
-                readme = Readme.brokenReadme
-            )
-            store.updateState(updatedState)
-            store.dispatch(mainActionsCreator.fetchReadmeError(error))
-        })
-
-        return observable
+            .map { result -> state.copy(readme = result) }
+            .flatMap { updatedState ->
+                Observable.just(
+                    ReceiveAction<Action<BaseData>, GlobalState>(
+                        mainActionsCreator.receiveReadme(),
+                        updatedState
+                    )
+                )
+            }
+            .onErrorReturn { error: Throwable ->
+                ReceiveAction(mainActionsCreator.fetchReadmeError(error), state)
+            }
     }
 }

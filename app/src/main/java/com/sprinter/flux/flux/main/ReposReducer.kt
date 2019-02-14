@@ -1,53 +1,55 @@
 package com.sprinter.flux.flux.main
 
-import android.annotation.SuppressLint
 import com.sprinter.flux.interactor.ReposInteractor
 import com.sprinter.fluxlib.Action
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.BaseData
+import com.sprinter.fluxlib.ConfigurableStore
+import com.sprinter.fluxlib.ReceiveAction
 import com.sprinter.fluxlib.Reducer
 import io.reactivex.Observable
 
 class ReposReducer(
     private val reposInteractor: ReposInteractor,
     private val mainActionsCreator: MainActionsCreator
-) : Reducer<GlobalState, MainActionData>() {
+) : Reducer<GlobalState, ReposActionData>() {
 
     override fun execute(
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         state: GlobalState,
-        action: Action<MainActionData>
-    ): Observable<*> {
+        action: Action<ReposActionData>
+    ): Observable<ReceiveAction<Action<BaseData>, GlobalState>> {
         return when (action.data) {
-            is MainActionData.FetchReposAction -> fetchRepos(
+            is ReposActionData.FetchReposAction -> fetchRepos(
                 store, state,
-                action.data as MainActionData.FetchReposAction
+                action.data as ReposActionData.FetchReposAction
             )
-            else -> Observable.empty<Void>()
+            else -> ReceiveAction.createEmpty(state)
         }
     }
 
-    override fun isServiceAction(action: Action<MainActionData>): Boolean {
-        return action.data is MainActionData.FetchReposAction
+    override fun isServiceAction(action: Action<ReposActionData>): Boolean {
+        return action.data is ReposActionData.FetchReposAction
     }
 
-    @SuppressLint("CheckResult")
     private fun fetchRepos(
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         state: GlobalState,
-        data: MainActionData.FetchReposAction
-    ): Observable<*> {
+        data: ReposActionData.FetchReposAction
+    ): Observable<ReceiveAction<Action<BaseData>, GlobalState>> {
         store.dispatch(mainActionsCreator.fetchingRepos())
 
         return reposInteractor.buildObservable(data.name)
-            .doOnNext { result ->
-                val updatedState = state.copy(
-                    reposState = state.reposState.copy(
-                        items = result
+            .map { result -> state.copy(reposState = state.reposState.copy(items = result)) }
+            .flatMap { updatedState ->
+                Observable.just(
+                    ReceiveAction<Action<BaseData>, GlobalState>(
+                        mainActionsCreator.receiveRepos(),
+                        updatedState
                     )
                 )
-                store.updateState(updatedState)
-                store.dispatch(mainActionsCreator.receiveRepos())
             }
-            .doOnError { error -> store.dispatch(mainActionsCreator.fetchReposError(error)) }
+            .onErrorReturn { error: Throwable ->
+                ReceiveAction(mainActionsCreator.fetchReposError(error), state)
+            }
     }
 }

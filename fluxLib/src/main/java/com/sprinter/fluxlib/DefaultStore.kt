@@ -1,5 +1,6 @@
 package com.sprinter.fluxlib
 
+import android.annotation.SuppressLint
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.processors.PublishProcessor
@@ -8,18 +9,13 @@ import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 
-open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
+open class DefaultStore<S : State>(private val state: S) : ConfigurableStore<S> {
 
     companion object {
         private val SCHEDULER_SINGLE_THREAD = Schedulers.from(
             Executors.newSingleThreadExecutor()
         )
     }
-
-    data class ReceiveAction<T : Action<BaseData>, S>(
-        val action: T,
-        val state: S
-    )
 
     private val reducers = HashSet<Reducer<S, BaseData>>()
     private val middlewares = HashSet<Middleware<S>>()
@@ -36,7 +32,8 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
             .subscribe { execute(it) }
     }
 
-    override fun registerReducer(reducer: Reducer<S, out BaseData>): MutableStore<S> {
+    override fun registerReducer(reducer: Reducer<S, out BaseData>): ConfigurableStore<S> {
+        @Suppress("UNCHECKED_CAST")
         reducers.add(reducer as Reducer<S, BaseData>)
         return this
     }
@@ -49,6 +46,7 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
     override fun dispatch(action: Action<BaseData>) {
         storeAction.offer(action)
         flowableProcessor.offer(action)
+        subjectAction.onNext(ReceiveAction(action, subject.value!!))
     }
 
     override fun getState(): S = subject.value!!
@@ -58,15 +56,14 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()
 
-    override fun updateState(updatedState: S) {
-        subject.onNext(updatedState)
-    }
-
+    @SuppressLint("CheckResult")
     private fun execute(action: Action<BaseData>): DefaultStore<S> {
         val filteredReducer = reducers
             .filter { reducer -> reducer.isServiceAction(action) }
 
-        var start: Observable<*> = Observable.fromCallable { }
+        val defaultAction = ReceiveAction(action, subject.value!!)
+        var start: Observable<ReceiveAction<Action<BaseData>, S>> =
+            Observable.fromCallable { return@fromCallable defaultAction }
 
         filteredReducer.forEach { filtered ->
             start = start.flatMap {
@@ -75,14 +72,14 @@ open class DefaultStore<S : State>(private val state: S) : MutableStore<S> {
         }
 
         middlewares.forEach { middleware -> start = middleware.interceptor(action, state, start) }
-        start.subscribe({ })
+        start
+            .subscribe {
+                subject.onNext(it.state)
+                if (!storeAction.contains(it.action)) {
+                    dispatch(it.action)
+                }
+            }
 
-        subjectAction.onNext(
-            ReceiveAction(
-                action,
-                subject.value!!
-            )
-        )
         return this
     }
 }

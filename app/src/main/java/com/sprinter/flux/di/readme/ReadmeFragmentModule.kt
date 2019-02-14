@@ -7,7 +7,7 @@ import com.sprinter.flux.mvp.contract.ReadmeContract
 import com.sprinter.flux.mvp.presenter.ReadmePresenter
 import com.sprinter.flux.repository.github.GithubRepository
 import com.sprinter.flux.router.Router
-import com.sprinter.fluxlib.MutableStore
+import com.sprinter.fluxlib.ConfigurableStore
 import dagger.Module
 import dagger.Provides
 
@@ -17,7 +17,7 @@ class ReadmeFragmentModule {
     @Provides
     fun provideReadmePresenter(
         router: Router,
-        store: MutableStore<GlobalState>,
+        store: ConfigurableStore<GlobalState>,
         mainActionsCreator: MainActionsCreator
     ): ReadmeContract.ReadmePresenter =
         ReadmePresenter(router, store, mainActionsCreator)

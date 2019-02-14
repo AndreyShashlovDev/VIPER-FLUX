@@ -7,6 +7,6 @@ abstract class Middleware<S : State> {
     abstract fun interceptor(
         action: Action<BaseData>,
         state: S,
-        observable: Observable<*>
-    ): Observable<*>
+        observable: Observable<ReceiveAction<Action<BaseData>, S>>
+    ): Observable<ReceiveAction<Action<BaseData>, S>>
 }
