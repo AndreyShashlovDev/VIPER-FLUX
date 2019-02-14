@@ -1,5 +1,7 @@
-package com.sprinter.flux.flux.main
+package com.sprinter.flux.flux.main.middleware
 
+import com.sprinter.flux.flux.main.GlobalState
+import com.sprinter.flux.flux.main.action.IsErrorAction
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.BaseData
 import com.sprinter.fluxlib.Middleware

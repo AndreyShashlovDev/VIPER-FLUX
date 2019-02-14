@@ -1,4 +1,4 @@
-package com.sprinter.flux.flux.main
+package com.sprinter.flux.flux.main.action
 
 import com.sprinter.fluxlib.BaseData
 
@@ -10,7 +10,8 @@ sealed class ReposActionData : BaseData() {
     data class FetchReposAction(val name: String) : ReposActionData()
     object FetchingReposAction : ReposActionData()
     object ReceiveReposAction : ReposActionData()
-    data class FetchReposErrorAction(val exception: Throwable) : ReposActionData(), IsErrorAction {
+    data class FetchReposErrorAction(val exception: Throwable) : ReposActionData(),
+        IsErrorAction {
         override fun getThrowable(): Throwable = exception
     }
 }

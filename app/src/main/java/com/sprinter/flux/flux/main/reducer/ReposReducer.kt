@@ -1,5 +1,8 @@
-package com.sprinter.flux.flux.main
+package com.sprinter.flux.flux.main.reducer
 
+import com.sprinter.flux.flux.main.GlobalState
+import com.sprinter.flux.flux.main.action.MainActionsCreator
+import com.sprinter.flux.flux.main.action.ReposActionData
 import com.sprinter.flux.interactor.ReposInteractor
 import com.sprinter.fluxlib.Action
 import com.sprinter.fluxlib.BaseData

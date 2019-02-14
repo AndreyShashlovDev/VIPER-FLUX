@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import com.arellomobile.mvp.InjectViewState
 import com.sprinter.flux.R
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.ReposActionData.FetchReposErrorAction
-import com.sprinter.flux.flux.main.ReposActionData.FetchingReposAction
-import com.sprinter.flux.flux.main.ReposActionData.ReceiveReposAction
-import com.sprinter.flux.flux.main.MainActionsCreator
+import com.sprinter.flux.flux.main.action.ReposActionData.FetchReposErrorAction
+import com.sprinter.flux.flux.main.action.ReposActionData.FetchingReposAction
+import com.sprinter.flux.flux.main.action.ReposActionData.ReceiveReposAction
+import com.sprinter.flux.flux.main.action.MainActionsCreator
 import com.sprinter.flux.mvp.contract.ReposContract
 import com.sprinter.flux.mvp.model.Repo
 import com.sprinter.flux.router.Router

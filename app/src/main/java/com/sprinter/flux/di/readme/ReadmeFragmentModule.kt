@@ -1,7 +1,7 @@
 package com.sprinter.flux.di.readme
 
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.MainActionsCreator
+import com.sprinter.flux.flux.main.action.MainActionsCreator
 import com.sprinter.flux.interactor.ReadmeInteractor
 import com.sprinter.flux.mvp.contract.ReadmeContract
 import com.sprinter.flux.mvp.presenter.ReadmePresenter

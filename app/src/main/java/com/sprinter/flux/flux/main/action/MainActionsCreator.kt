@@ -1,4 +1,4 @@
-package com.sprinter.flux.flux.main
+package com.sprinter.flux.flux.main.action
 
 import com.sprinter.fluxlib.Action
 

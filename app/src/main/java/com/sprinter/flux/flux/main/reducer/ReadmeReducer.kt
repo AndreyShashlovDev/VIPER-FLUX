@@ -1,5 +1,8 @@
-package com.sprinter.flux.flux.main
+package com.sprinter.flux.flux.main.reducer
 
+import com.sprinter.flux.flux.main.GlobalState
+import com.sprinter.flux.flux.main.action.MainActionsCreator
+import com.sprinter.flux.flux.main.action.ReadmeActionData
 import com.sprinter.flux.interactor.ReadmeInteractor
 import com.sprinter.flux.interactor.ReadmeParams
 import com.sprinter.fluxlib.Action

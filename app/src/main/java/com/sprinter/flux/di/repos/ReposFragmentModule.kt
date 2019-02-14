@@ -2,7 +2,7 @@ package com.sprinter.flux.di.repos
 
 import com.sprinter.fluxlib.ConfigurableStore
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.MainActionsCreator
+import com.sprinter.flux.flux.main.action.MainActionsCreator
 import com.sprinter.flux.interactor.ReposInteractor
 import com.sprinter.flux.mvp.contract.ReposContract
 import com.sprinter.flux.mvp.presenter.ReposPresenter

@@ -5,10 +5,10 @@ import android.util.Base64
 import com.arellomobile.mvp.InjectViewState
 import com.sprinter.flux.R
 import com.sprinter.flux.flux.main.GlobalState
-import com.sprinter.flux.flux.main.MainActionsCreator
-import com.sprinter.flux.flux.main.ReadmeActionData.FetchReadmeErrorAction
-import com.sprinter.flux.flux.main.ReadmeActionData.FetchingReadmeAction
-import com.sprinter.flux.flux.main.ReadmeActionData.ReceiveReadmeAction
+import com.sprinter.flux.flux.main.action.MainActionsCreator
+import com.sprinter.flux.flux.main.action.ReadmeActionData.FetchReadmeErrorAction
+import com.sprinter.flux.flux.main.action.ReadmeActionData.FetchingReadmeAction
+import com.sprinter.flux.flux.main.action.ReadmeActionData.ReceiveReadmeAction
 import com.sprinter.flux.mvp.contract.ReadmeContract
 import com.sprinter.flux.mvp.model.Readme
 import com.sprinter.flux.router.Router
